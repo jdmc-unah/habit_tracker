@@ -1,17 +1,4 @@
-name: User Story
-description: Create a new user story
-title: "[Story]: "
-labels: ["user-story"]
 
-body:
-  - type: textarea
-    id: user-story
-    attributes:
-      label: User Story
-      description: Describe the user story.
-      placeholder: "As a user, I want..., so that..."
-    validations:
-      required: true
 # User Story Template
 **Title:**
 _As a [user role], I want [feature/goal], so that [reason]._
