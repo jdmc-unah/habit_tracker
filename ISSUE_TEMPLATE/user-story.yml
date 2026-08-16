@@ -1,69 +1,14 @@
 name: User Story
-description: Create a user story with acceptance criteria and estimation
+description: Create a new user story
 title: "[Story]: "
-labels:
-  - "user-story"
+labels: ["user-story"]
 
 body:
-  - type: input
-    id: title
-    attributes:
-      label: Title
-      description: Enter a short and descriptive title for the user story.
-      placeholder: "Account registration"
-    validations:
-      required: true
-
   - type: textarea
     id: user-story
     attributes:
       label: User Story
-      description: Describe the story using the standard format.
-      placeholder: |
-        As a [user role], I want [feature/goal], so that [reason].
+      description: Describe the user story.
+      placeholder: "As a user, I want..., so that..."
     validations:
       required: true
-
-  - type: textarea
-    id: acceptance-criteria
-    attributes:
-      label: Acceptance Criteria
-      description: Define the conditions that must be met for this story to be considered complete.
-      placeholder: |
-        1. [Criteria 1]
-        2. [Criteria 2]
-        3. [Criteria 3]
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      description: Select the priority of this user story.
-      options:
-        - High
-        - Medium
-        - Low
-      default: 1
-    validations:
-      required: true
-
-  - type: input
-    id: story-points
-    attributes:
-      label: Story Points
-      description: Estimated effort required to complete this story.
-      placeholder: "e.g. 1, 2, 3, 5, 8"
-    validations:
-      required: true
-
-  - type: textarea
-    id: notes
-    attributes:
-      label: Notes
-      description: Add additional information, edge cases, or considerations.
-      placeholder: |
-        - [Additional information]
-        - [Edge cases]
-        - [Technical considerations]
