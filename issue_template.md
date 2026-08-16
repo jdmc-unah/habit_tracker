@@ -1,6 +1,7 @@
 # User Story Template
 **Title:**
 _As a [user role], I want [feature/goal], so that [reason]._
+
 **Acceptance Criteria:**
 1. [Criteria 1]
 2. [Criteria 2]
