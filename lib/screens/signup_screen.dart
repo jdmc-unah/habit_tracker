@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/country_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
 
@@ -21,18 +22,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   double _age = 25.0;
   String _selectedCountry = 'United States';
+  List<String> _countries = CountryService.defaultCountries;
+  bool _isLoadingCountries = true;
 
-  final List<String> _countries = [
-    'United States',
-    'Canada',
-    'United Kingdom',
-    'Germany',
-    'France',
-    'Japan',
-    'Australia',
-    'Mexico',
-    'Colombia',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadCountries();
+  }
+
+  Future<void> _loadCountries() async {
+    final countryService = CountryService();
+    final countries = await countryService.fetchCountries();
+    if (mounted) {
+      setState(() {
+        _countries = countries;
+        if (!_countries.contains(_selectedCountry)) {
+          _selectedCountry = _countries.isNotEmpty ? _countries.first : '';
+        }
+        _isLoadingCountries = false;
+      });
+    }
+  }
 
   final List<String> _availableHabits = [
     'Wake Up Early',
@@ -271,10 +282,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           border: InputBorder.none,
                           fillColor: Colors.transparent,
                         ),
-                        icon: const Icon(
-                          Icons.arrow_drop_down,
-                          color: Color(0xFF0C53C5),
-                        ),
+                        icon: _isLoadingCountries
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF0C53C5),
+                                  ),
+                                ),
+                              )
+                            : const Icon(
+                                Icons.arrow_drop_down,
+                                color: Color(0xFF0C53C5),
+                              ),
                         style: const TextStyle(
                           color: Color(0xFF0C53C5),
                           fontSize: 16,

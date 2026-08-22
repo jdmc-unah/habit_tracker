@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/notification_service.dart';
 import '../services/analytics_service.dart';
+import '../services/country_service.dart';
 import '../widgets/custom_button.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -21,6 +22,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _webAlertTitle = '';
   String _webAlertBody = '';
 
+  List<String> _countries = [];
+  bool _isLoadingCountries = true;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +38,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         });
       }
     };
+    _loadCountries();
+  }
+
+  Future<void> _loadCountries() async {
+    final countryService = CountryService();
+    final countries = await countryService.fetchCountries();
+    if (mounted) {
+      setState(() {
+        _countries = countries;
+        _isLoadingCountries = false;
+      });
+    }
   }
 
   @override
@@ -151,6 +167,78 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Section 1.5: Profile Settings / Country selection
+            const Text(
+              'Profile Settings',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Your Country',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _isLoadingCountries
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : DropdownButtonFormField<String>(
+                            // ignore: deprecated_member_use
+                            value: _countries.contains(authProvider.user?.country)
+                                ? authProvider.user?.country
+                                : (_countries.isNotEmpty ? _countries.first : ''),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                            ),
+                            items: _countries.map((country) {
+                              return DropdownMenuItem<String>(
+                                value: country,
+                                child: Text(country),
+                              );
+                            }).toList(),
+                            onChanged: (newCountry) async {
+                              if (newCountry != null &&
+                                  authProvider.user != null &&
+                                  newCountry != authProvider.user!.country) {
+                                final updatedUser = authProvider.user!.copyWith(
+                                  country: newCountry,
+                                );
+                                final success = await authProvider.updateProfile(updatedUser);
+                                if (context.mounted && success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Country updated to $newCountry successfully!'),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
